@@ -1,0 +1,33 @@
+# Tema do app. Paleta única, derivada da identidade visual do cliente: âmbar
+# #ffb73f como cor de marca, grafite #252a2d, creme #fff5e5 e tipografia Red Hat.
+# Não há mais variante clara e escura: uma paleta só, desenhada para o fundo em
+# que vai aparecer, evita o meio-termo que nenhuma das duas resolve bem.
+#
+# Fica versionado para sobreviver ao deploy: definir cor aqui é mais estável do
+# que injetar CSS, que quebra a cada versão do Streamlit.
+
+[theme]
+base = "light"
+
+# A fonte vem do Google Fonts pela própria configuração do Streamlit. Os mesmos
+# arquivos estão em assets/fonts/ para o matplotlib, senão os gráficos sairiam
+# com uma tipografia diferente da interface.
+font = "Red Hat Text:https://fonts.googleapis.com/css2?family=Red+Hat+Text:wght@400;500;700&display=swap, sans-serif"
+headingFont = "Red Hat Display:https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;700;900&display=swap, sans-serif"
+
+baseFontSize = 18
+baseRadius = "0.5rem"
+showWidgetBorder = true
+
+primaryColor = "#ffb73f"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f7f7f9"
+textColor = "#08080a"
+borderColor = "#e5e5e9"
+linkColor = "#8f5800"
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false

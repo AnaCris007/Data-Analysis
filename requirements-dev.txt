@@ -1,0 +1,9 @@
+# Ambiente de desenvolvimento: tudo do app mais o Jupyter para os notebooks.
+#
+#   pip install -r requirements-dev.txt
+#   jupyter lab
+
+-r requirements.txt
+
+jupyter==1.1.1
+ipykernel==7.3.0
