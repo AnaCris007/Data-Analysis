@@ -524,7 +524,10 @@ st.set_page_config(page_title="Triagem de risco acadêmico", layout="wide")
 st.markdown(
     f"""
     <style>
-      .block-container {{ padding-top: 3rem; padding-bottom: 4.5rem; max-width: 1160px; }}
+      /* Largura pensada para tela de trabalho: em 1920 o conteúdo preenche
+         sem colar nas bordas, e em tela menor o Streamlit reduz sozinho. */
+      .block-container {{ padding-top: 2.6rem; padding-bottom: 4.5rem;
+        max-width: 1450px; }}
       section[data-testid="stSidebar"] {{ width: 350px !important; }}
       section[data-testid="stSidebar"] > div {{ padding-top: 2.4rem; }}
 
@@ -545,7 +548,9 @@ st.markdown(
         color: {COR["marca_tinta"]}; font-weight: 500; margin-bottom: .6rem; }}
       .titulo {{ font-size: 2.4rem; font-weight: 700; letter-spacing: -.022em;
         line-height: 1.12; margin: 0 0 .65rem 0; }}
-      .linhafina {{ color: {COR["tinta_2"]}; font-size: 1.06rem; max-width: 62ch;
+      /* 72 caracteres por linha: ainda dentro da faixa confortável de leitura
+         (45 a 75), mas preenche melhor a largura nova do contêiner. */
+      .linhafina {{ color: {COR["tinta_2"]}; font-size: 1.06rem; max-width: 72ch;
         margin: 0 0 .5rem 0; line-height: 1.55; }}
 
       /* Legenda de gráfico não leva o limite de medida da linhafina: ela
