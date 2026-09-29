@@ -548,6 +548,13 @@ st.markdown(
       .linhafina {{ color: {COR["tinta_2"]}; font-size: 1.06rem; max-width: 62ch;
         margin: 0 0 .5rem 0; line-height: 1.55; }}
 
+      /* Legenda de gráfico não leva o limite de medida da linhafina: ela
+         acompanha a largura da figura, senão sobra um vão à direita. As mais
+         longas vão em duas colunas, para o texto continuar legível. */
+      .legenda {{ color: {COR["tinta_2"]}; font-size: 1.02rem; line-height: 1.55;
+        margin: .2rem 0 .4rem 0; }}
+      .legenda p {{ margin: 0 0 .5rem 0; }}
+
       /* Hábitos como lista de definição, e não como caixas de dashboard. */
       .habitos {{ display: grid; grid-template-columns: repeat(3, 1fr);
         gap: 1.6rem 2.6rem; margin: .6rem 0 .2rem 0; }}
@@ -704,22 +711,30 @@ def painel(habitos, nota_real=None):
             width="stretch",
         )
         st.markdown(
-            '<p class="linhafina" style="font-size:.97rem;">Cada barra cinza é um '
-            "grupo de alunos da base com aquela nota. A <strong>linha colorida</strong> "
-            "marca a previsão deste aluno e a <strong>faixa em volta</strong> é a "
-            "margem de erro do modelo, de ±%s pontos. A linha escura é o corte.</p>"
+            '<div class="legenda"><p>Cada barra cinza é um grupo de alunos da base '
+            "com aquela nota. A <strong>linha colorida</strong> marca a previsão "
+            "deste aluno e a <strong>faixa em volta</strong> é a margem de erro do "
+            "modelo, de ±%s pontos. A linha escura é o corte.</p></div>"
             % num(desvio),
             unsafe_allow_html=True,
         )
 
     st.markdown('<div class="secao">O que mudar primeiro</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<p class="linhafina">Cada barra responde: <em>se só este hábito mudasse, '
-        "e todo o resto ficasse igual, quantos pontos a nota prevista subiria?</em> "
-        "A barra em âmbar é a mudança que rende mais. Mudanças que passariam do "
-        "máximo observado na base ficam de fora, para não sugerir o impossível.</p>",
-        unsafe_allow_html=True,
-    )
+    esq, dir_ = st.columns(2, gap="large")
+    with esq:
+        st.markdown(
+            '<div class="legenda"><p>Cada barra responde: <em>se só este hábito '
+            "mudasse, e todo o resto ficasse igual, quantos pontos a nota prevista "
+            "subiria?</em></p></div>",
+            unsafe_allow_html=True,
+        )
+    with dir_:
+        st.markdown(
+            '<div class="legenda"><p>A barra em âmbar é a mudança que rende mais. '
+            "Mudanças que passariam do máximo observado na base ficam de fora, para "
+            "não sugerir o impossível.</p></div>",
+            unsafe_allow_html=True,
+        )
 
     ganhos = calcular_alavancas(modelo, habitos, LIMITES)
     if ganhos.empty:
@@ -789,55 +804,70 @@ with aba_turma:
                           format_func=lambda c: ROTULOS[c][0])
     st.pyplot(grafico_habito(base, habito, corte), width="stretch")
 
-    st.markdown(
-        '<p class="linhafina"><strong>Em cima</strong>, cada caixa cobre a metade '
-        "central das notas daquela faixa, e a linha branca dentro dela é a mediana. "
-        "Os fios que saem da caixa vão até as notas extremas. Se as caixas sobem em "
-        "degraus sem se sobrepor, o hábito separa a turma; se ficam na mesma altura, "
-        "não separa.</p>"
-        '<p class="linhafina"><strong>Embaixo</strong>, quantos alunos daquela faixa '
-        "ficam abaixo da nota de corte. É o painel que diz onde concentrar esforço: "
-        "compare estudo, onde o risco desaba de 94% para zero, com exercício, onde "
-        "ele mal se move.</p>",
-        unsafe_allow_html=True,
-    )
+    esq, dir_ = st.columns(2, gap="large")
+    with esq:
+        st.markdown(
+            '<div class="legenda"><p><strong>Em cima</strong>, cada caixa cobre a '
+            "metade central das notas daquela faixa, e a linha branca dentro dela é "
+            "a mediana. Os fios que saem da caixa vão até as notas extremas. Se as "
+            "caixas sobem em degraus sem se sobrepor, o hábito separa a turma; se "
+            "ficam na mesma altura, não separa.</p></div>",
+            unsafe_allow_html=True,
+        )
+    with dir_:
+        st.markdown(
+            '<div class="legenda"><p><strong>Embaixo</strong>, quantos alunos daquela '
+            "faixa ficam abaixo da nota de corte. É o painel que diz onde concentrar "
+            "esforço: compare estudo, onde o risco desaba de 94% para zero, com "
+            "exercício, onde ele mal se move.</p></div>",
+            unsafe_allow_html=True,
+        )
 
     st.divider()
     st.markdown('<div class="secao">O que se relaciona com o quê</div>',
                 unsafe_allow_html=True)
-    st.markdown(
-        '<p class="linhafina">Cada célula cruza duas variáveis e mostra o quanto elas '
-        "andam juntas, de -1 a +1. <strong>Âmbar</strong> quer dizer que sobem juntas, "
-        "<strong>verde-azulado</strong> que uma sobe quando a outra desce, e "
-        "<strong>cinza</strong> que não têm relação. Quanto mais forte a cor, mais "
-        "forte a relação.</p>"
-        '<p class="linhafina">A <strong>primeira coluna</strong> é a que responde à '
-        "pergunta da análise: é ali que está a relação de cada hábito com a nota. "
-        "O resto do mapa é quase todo cinza, e isso também é informação: os hábitos "
-        "desta base não se relacionam entre si. Quem estuda mais não dorme menos, "
-        "quem usa mais tela não se exercita menos.</p>",
-        unsafe_allow_html=True,
-    )
-    # Coluna mais estreita que a página: esticado, o mapa vira um tabuleiro de
-    # células enormes sem ganhar nenhuma legibilidade.
-    col_mapa, _ = st.columns([1.55, 1])
+    # O mapa não estica até a página inteira, senão vira um tabuleiro de células
+    # enormes sem ganhar legibilidade. A legenda ocupa o espaço que sobra ao lado.
+    col_mapa, col_texto = st.columns([1.5, 1], gap="large")
     with col_mapa:
         st.pyplot(grafico_correlacao(base), width="stretch")
+    with col_texto:
+        st.markdown(
+            '<div class="legenda"><p>Cada célula cruza duas variáveis e mostra o '
+            "quanto elas andam juntas, de -1 a +1. <strong>Âmbar</strong> quer dizer "
+            "que sobem juntas, <strong>verde-azulado</strong> que uma sobe quando a "
+            "outra desce, e <strong>cinza</strong> que não têm relação. Quanto mais "
+            "forte a cor, mais forte a relação.</p>"
+            "<p>A <strong>primeira coluna</strong> é a que responde à pergunta da "
+            "análise: é ali que está a relação de cada hábito com a nota.</p>"
+            "<p>O resto do mapa é quase todo cinza, e isso também é informação: os "
+            "hábitos desta base não se relacionam entre si. Quem estuda mais não "
+            "dorme menos, quem usa mais tela não se exercita menos.</p></div>",
+            unsafe_allow_html=True,
+        )
 
 
 with aba_insights:
     st.markdown('<div class="secao">Quanto vale cada hábito</div>',
                 unsafe_allow_html=True)
-    st.markdown(
-        '<p class="linhafina">Os hábitos são medidos em unidades diferentes: horas, '
-        "dias por semana, uma escala de 1 a 10. Comparar 1 hora com 1 ponto de escala "
-        "não diria nada, então cada um aparece aqui pelo quanto vale uma mudança "
-        "<strong>típica</strong> dele, do tamanho da variação que existe na turma.</p>"
-        '<p class="linhafina">Assim as barras ficam comparáveis: horas de estudo vale '
-        "quase três vezes saúde mental, que por sua vez vale mais que o resto junto. "
-        "<strong>Âmbar sobe a nota, verde-azulado derruba.</strong></p>",
-        unsafe_allow_html=True,
-    )
+    esq, dir_ = st.columns(2, gap="large")
+    with esq:
+        st.markdown(
+            '<div class="legenda"><p>Os hábitos são medidos em unidades diferentes: '
+            "horas, dias por semana, uma escala de 1 a 10. Comparar 1 hora com 1 "
+            "ponto de escala não diria nada, então cada um aparece aqui pelo quanto "
+            "vale uma mudança <strong>típica</strong> dele, do tamanho da variação "
+            "que existe na turma.</p></div>",
+            unsafe_allow_html=True,
+        )
+    with dir_:
+        st.markdown(
+            '<div class="legenda"><p>Assim as barras ficam comparáveis: horas de '
+            "estudo vale quase três vezes saúde mental, que por sua vez vale mais que "
+            "o resto junto. <strong>Âmbar sobe a nota, verde-azulado derruba.</strong>"
+            "</p></div>",
+            unsafe_allow_html=True,
+        )
     st.pyplot(grafico_impacto(base, modelo), width="stretch")
 
     st.divider()
@@ -855,16 +885,22 @@ with aba_insights:
                            format_func=lambda c: GRUPOS[c])
     st.pyplot(grafico_grupos(base, recorte), width="stretch")
 
-    st.markdown(
-        '<p class="linhafina">Cada <strong>ponto</strong> é a nota média de um grupo, '
-        "e a <strong>barra em volta</strong> é a incerteza dessa média: grupo pequeno "
-        "tem barra larga. Quando as barras de dois grupos se sobrepõem, não dá para "
-        "afirmar que um vai melhor que o outro.</p>"
-        '<p class="linhafina">A <strong>faixa em âmbar</strong> é a régua. Ela tem '
-        "meio desvio-padrão da nota, que é o mínimo para uma diferença valer alguma "
-        "ação. Ponto que não sai dela é ruído com cara de achado.</p>",
-        unsafe_allow_html=True,
-    )
+    esq, dir_ = st.columns(2, gap="large")
+    with esq:
+        st.markdown(
+            '<div class="legenda"><p>Cada <strong>ponto</strong> é a nota média de um '
+            "grupo, e a <strong>barra em volta</strong> é a incerteza dessa média: "
+            "grupo pequeno tem barra larga. Quando as barras de dois grupos se "
+            "sobrepõem, não dá para afirmar que um vai melhor que o outro.</p></div>",
+            unsafe_allow_html=True,
+        )
+    with dir_:
+        st.markdown(
+            '<div class="legenda"><p>A <strong>faixa em âmbar</strong> é a régua. Ela '
+            "tem meio desvio-padrão da nota, que é o mínimo para uma diferença valer "
+            "alguma ação. Ponto que não sai dela é ruído com cara de achado.</p></div>",
+            unsafe_allow_html=True,
+        )
 
     st.markdown(
         '<p class="linhafina">Nenhum recorte demográfico separa as notas: todas as '

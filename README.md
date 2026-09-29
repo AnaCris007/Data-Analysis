@@ -1,16 +1,12 @@
 # Hábitos e desempenho estudantil
 
-**[Abrir o app](https://data-analysis-007.streamlit.app/)** · Teste prático de Analytics Engineer (estágio)
+Uma [base](data/raw/habitos_e_desempenho_estudantil.csv) de 1.000 alunos relaciona hábitos de estudo, sono, tela, exercício e saúde mental com a nota de prova. Este repositório descreve essa base, mede o que de fato explica a nota, e termina numa ferramenta que a coordenação pedagógica pode usar: dado um aluno, ela diz se ele está em rota de reprovação e qual mudança de hábito renderia mais pontos.
 
-Uma base de 1.000 alunos relaciona hábitos de estudo, sono, tela, exercício e saúde mental com a nota de prova. Este repositório descreve essa base, mede o que de fato explica a nota, e termina numa ferramenta que a coordenação pedagógica pode usar: dado um aluno, ela diz se ele está em rota de reprovação e qual mudança de hábito renderia mais pontos.
+<div align="center">
 
-O caminho até lá encontrou três coisas que mudaram a análise pelo meio.
+**[Abrir o site](https://data-analysis-007.streamlit.app/)** · Triagem de risco acadêmico
 
-**A leitura padrão do arquivo inventa dados.** `pd.read_csv()` sem parâmetro converte a string `"None"` em `NaN`, e com isso fabrica 91 valores ausentes que o CSV não tem. O erro não aparece em nenhuma verificação posterior, porque o `isna()` concorda com ele.
-
-**Quase toda variável derivada piora o resultado.** Testei sete combinações que pareciam inteligentes (horas produtivas, razão estudo sobre lazer, índice geral de hábitos) contra as colunas que as originaram. Seis perderam. Só uma sobreviveu.
-
-**A correlação simples engana sobre o que importa.** Horas de estudo ocupa 68% da variação da nota, o que faz todo o resto parecer irrelevante. Entre alunos que estudam a mesma quantidade, saúde mental e tempo de tela são o que separa o resultado, e são justamente os hábitos em que uma escola consegue agir.
+</div>
 
 ![Triagem de risco acadêmico](assets/img/app.png)
 
@@ -18,7 +14,7 @@ O caminho até lá encontrou três coisas que mudaram a análise pelo meio.
 
 ## Como rodar
 
-O Python do sistema costuma recusar instalação de pacote (PEP 668), então o ambiente virtual não é preferência, é requisito.
+Para isolar as dependências e garantir que o projeto rode em qualquer ambiente, utilize um ambiente virtual (`venv`).
 
 ### O app
 
@@ -36,9 +32,11 @@ pip install -r requirements-notebooks.txt
 jupyter lab
 ```
 
-Eles estão salvos **com as saídas**, então dá para ler tudo direto no GitHub sem rodar nada.
+**Nota*:* Eles estão salvos **com as saídas**, então dá para ler tudo direto no GitHub sem rodar nada.
 
 ### A verificação
+
+Para validar a execução dos notebooks foram desenvolvidos alguns testes simples que podem ser executados via linha de comando:
 
 ```bash
 python tests/teste_notebooks.py
