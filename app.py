@@ -538,7 +538,8 @@ st.markdown(
       [data-testid="stMainMenuItem-recordScreencast"],
       [data-testid="stMainMenuItem-theme-System"],
       [data-testid="stMainMenuItem-theme-Light"],
-      [data-testid="stMainMenuItem-theme-Dark"] {{ display: none !important; }}
+      [data-testid="stMainMenuItem-theme-Dark"],
+      [data-testid="stMainMenuItem-clearCache"] {{ display: none !important; }}
 
       .chapeu {{ font-size: .82rem; letter-spacing: .16em; text-transform: uppercase;
         color: {COR["marca_tinta"]}; font-weight: 500; margin-bottom: .6rem; }}
@@ -598,8 +599,14 @@ st.markdown(
     """
     <div class="chapeu">Coordenação pedagógica</div>
     <div class="titulo">Triagem de risco acadêmico</div>
-    <p class="linhafina">Estima a nota da prova a partir dos hábitos do aluno e mostra
-    qual mudança renderia mais pontos.</p>
+    <p class="linhafina">Quem provavelmente vai ficar abaixo da nota de corte na
+    próxima prova, e o que fazer a respeito.</p>
+    <p class="linhafina">A partir de seis hábitos declarados pelo aluno, o modelo
+    estima a nota e acerta o veredito em <strong>92% dos casos</strong>. Serve a duas
+    decisões: <strong>quem chamar</strong> para reforço antes da prova, e
+    <strong>o que recomendar</strong> para cada aluno chamado. Os dados são de 1.000
+    alunos, e quando o modelo não tem confiança suficiente ele diz isso em vez de
+    chutar.</p>
     """,
     unsafe_allow_html=True,
 )
@@ -630,16 +637,6 @@ with st.sidebar:
             "Os hábitos desta base são independentes entre si, o que indica dado "
             "sintético: o app demonstra o método e não deve orientar decisão sobre "
             "aluno real."
-        )
-
-    with st.expander("Limpar cache"):
-        st.markdown(
-            "Fica no menu ☰ do canto superior direito. Descarta a base já lida e o "
-            "modelo já treinado, que o app guarda em memória para não refazer a "
-            "cada clique. Depois de limpar, a próxima interação relê o CSV e "
-            "reajusta o modelo do zero.\n\n"
-            "Só é necessário se o arquivo de dados mudar. Em uso normal não faz "
-            "diferença."
         )
 
 aba_aluno, aba_turma, aba_insights = st.tabs(
@@ -706,11 +703,21 @@ def painel(habitos, nota_real=None):
             grafico_posicao(base, nota_prevista, corte, desvio, cor_estado),
             width="stretch",
         )
+        st.markdown(
+            '<p class="linhafina" style="font-size:.97rem;">Cada barra cinza é um '
+            "grupo de alunos da base com aquela nota. A <strong>linha colorida</strong> "
+            "marca a previsão deste aluno e a <strong>faixa em volta</strong> é a "
+            "margem de erro do modelo, de ±%s pontos. A linha escura é o corte.</p>"
+            % num(desvio),
+            unsafe_allow_html=True,
+        )
 
     st.markdown('<div class="secao">O que mudar primeiro</div>', unsafe_allow_html=True)
     st.markdown(
-        '<p class="linhafina">Ganho em pontos de cada mudança realista, mantendo '
-        "todo o resto igual.</p>",
+        '<p class="linhafina">Cada barra responde: <em>se só este hábito mudasse, '
+        "e todo o resto ficasse igual, quantos pontos a nota prevista subiria?</em> "
+        "A barra em âmbar é a mudança que rende mais. Mudanças que passariam do "
+        "máximo observado na base ficam de fora, para não sugerir o impossível.</p>",
         unsafe_allow_html=True,
     )
 
@@ -772,10 +779,9 @@ with aba_aluno:
 
 with aba_turma:
     st.markdown(
-        '<p class="linhafina">Escolha um hábito. O painel de cima mostra a nota de '
-        "cada faixa de alunos, e o de baixo quantos deles ficam abaixo do corte. "
-        "Os dois dividem o mesmo eixo, e cada faixa guarda a mesma cor nos dois: "
-        "é o painel de baixo que diz onde concentrar esforço.</p>",
+        '<p class="linhafina">Escolha um hábito e veja como ele separa a turma. Os '
+        "alunos são divididos em faixas, e cada faixa guarda a mesma cor nos dois "
+        "painéis.</p>",
         unsafe_allow_html=True,
     )
 
@@ -783,13 +789,33 @@ with aba_turma:
                           format_func=lambda c: ROTULOS[c][0])
     st.pyplot(grafico_habito(base, habito, corte), width="stretch")
 
+    st.markdown(
+        '<p class="linhafina"><strong>Em cima</strong>, cada caixa cobre a metade '
+        "central das notas daquela faixa, e a linha branca dentro dela é a mediana. "
+        "Os fios que saem da caixa vão até as notas extremas. Se as caixas sobem em "
+        "degraus sem se sobrepor, o hábito separa a turma; se ficam na mesma altura, "
+        "não separa.</p>"
+        '<p class="linhafina"><strong>Embaixo</strong>, quantos alunos daquela faixa '
+        "ficam abaixo da nota de corte. É o painel que diz onde concentrar esforço: "
+        "compare estudo, onde o risco desaba de 94% para zero, com exercício, onde "
+        "ele mal se move.</p>",
+        unsafe_allow_html=True,
+    )
+
     st.divider()
     st.markdown('<div class="secao">O que se relaciona com o quê</div>',
                 unsafe_allow_html=True)
     st.markdown(
-        '<p class="linhafina">Fora da primeira coluna o mapa é quase todo neutro, e '
-        "isso é informação: os hábitos desta base não se relacionam entre si. Quem "
-        "estuda mais não dorme menos, quem usa mais tela não se exercita menos.</p>",
+        '<p class="linhafina">Cada célula cruza duas variáveis e mostra o quanto elas '
+        "andam juntas, de -1 a +1. <strong>Âmbar</strong> quer dizer que sobem juntas, "
+        "<strong>verde-azulado</strong> que uma sobe quando a outra desce, e "
+        "<strong>cinza</strong> que não têm relação. Quanto mais forte a cor, mais "
+        "forte a relação.</p>"
+        '<p class="linhafina">A <strong>primeira coluna</strong> é a que responde à '
+        "pergunta da análise: é ali que está a relação de cada hábito com a nota. "
+        "O resto do mapa é quase todo cinza, e isso também é informação: os hábitos "
+        "desta base não se relacionam entre si. Quem estuda mais não dorme menos, "
+        "quem usa mais tela não se exercita menos.</p>",
         unsafe_allow_html=True,
     )
     # Coluna mais estreita que a página: esticado, o mapa vira um tabuleiro de
@@ -803,9 +829,13 @@ with aba_insights:
     st.markdown('<div class="secao">Quanto vale cada hábito</div>',
                 unsafe_allow_html=True)
     st.markdown(
-        '<p class="linhafina">Efeito de um desvio-padrão de cada hábito sobre a '
-        "nota, com os outros cinco mantidos constantes. Pôr todos na mesma régua "
-        "permite comparar horas de estudo com uma escala de 1 a 10.</p>",
+        '<p class="linhafina">Os hábitos são medidos em unidades diferentes: horas, '
+        "dias por semana, uma escala de 1 a 10. Comparar 1 hora com 1 ponto de escala "
+        "não diria nada, então cada um aparece aqui pelo quanto vale uma mudança "
+        "<strong>típica</strong> dele, do tamanho da variação que existe na turma.</p>"
+        '<p class="linhafina">Assim as barras ficam comparáveis: horas de estudo vale '
+        "quase três vezes saúde mental, que por sua vez vale mais que o resto junto. "
+        "<strong>Âmbar sobe a nota, verde-azulado derruba.</strong></p>",
         unsafe_allow_html=True,
     )
     st.pyplot(grafico_impacto(base, modelo), width="stretch")
@@ -814,15 +844,27 @@ with aba_insights:
     st.markdown('<div class="secao">Há diferença entre grupos?</div>',
                 unsafe_allow_html=True)
     st.markdown(
-        '<p class="linhafina">Escolha um recorte. A faixa em âmbar tem meio '
-        "desvio-padrão da nota: diferença que não sai dela é pequena demais para "
-        "orientar qualquer ação.</p>",
+        '<p class="linhafina">Esta é a pergunta que mais convida a pescar resultado: '
+        "com seis recortes e mil alunos, sempre dá para achar um grupo à frente e "
+        "contar uma história sobre ele. Escolha qualquer recorte e confira você "
+        "mesma.</p>",
         unsafe_allow_html=True,
     )
 
     recorte = st.selectbox("Recorte", list(GRUPOS), index=0,
                            format_func=lambda c: GRUPOS[c])
     st.pyplot(grafico_grupos(base, recorte), width="stretch")
+
+    st.markdown(
+        '<p class="linhafina">Cada <strong>ponto</strong> é a nota média de um grupo, '
+        "e a <strong>barra em volta</strong> é a incerteza dessa média: grupo pequeno "
+        "tem barra larga. Quando as barras de dois grupos se sobrepõem, não dá para "
+        "afirmar que um vai melhor que o outro.</p>"
+        '<p class="linhafina">A <strong>faixa em âmbar</strong> é a régua. Ela tem '
+        "meio desvio-padrão da nota, que é o mínimo para uma diferença valer alguma "
+        "ação. Ponto que não sai dela é ruído com cara de achado.</p>",
+        unsafe_allow_html=True,
+    )
 
     st.markdown(
         '<p class="linhafina">Nenhum recorte demográfico separa as notas: todas as '

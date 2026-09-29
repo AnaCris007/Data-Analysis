@@ -16,3 +16,4 @@ __pycache__/
 
 # Ferramentas locais
 .claude/
+.streamlit/secrets.toml

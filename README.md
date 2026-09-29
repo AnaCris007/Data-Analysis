@@ -1,18 +1,24 @@
 # Hábitos e desempenho estudantil
 
-Análise de 1.000 alunos relacionando hábitos (estudo, sono, tela, exercício, saúde mental) com a nota de prova, e um app que transforma o resultado em ferramenta de triagem.
+**[Abrir o app](https://data-analysis-007.streamlit.app/)** · Teste prático de Analytics Engineer (estágio)
 
-Teste prático de Analytics Engineer (estágio).
+Uma base de 1.000 alunos relaciona hábitos de estudo, sono, tela, exercício e saúde mental com a nota de prova. Este repositório descreve essa base, mede o que de fato explica a nota, e termina numa ferramenta que a coordenação pedagógica pode usar: dado um aluno, ela diz se ele está em rota de reprovação e qual mudança de hábito renderia mais pontos.
 
-**App publicado:** _(preencher com a URL do Streamlit Cloud após o deploy)_
+O caminho até lá encontrou três coisas que mudaram a análise pelo meio.
 
-![Triagem de risco acadêmico](docs/app.png)
+**A leitura padrão do arquivo inventa dados.** `pd.read_csv()` sem parâmetro converte a string `"None"` em `NaN`, e com isso fabrica 91 valores ausentes que o CSV não tem. O erro não aparece em nenhuma verificação posterior, porque o `isna()` concorda com ele.
+
+**Quase toda variável derivada piora o resultado.** Testei sete combinações que pareciam inteligentes (horas produtivas, razão estudo sobre lazer, índice geral de hábitos) contra as colunas que as originaram. Seis perderam. Só uma sobreviveu.
+
+**A correlação simples engana sobre o que importa.** Horas de estudo ocupa 68% da variação da nota, o que faz todo o resto parecer irrelevante. Entre alunos que estudam a mesma quantidade, saúde mental e tempo de tela são o que separa o resultado, e são justamente os hábitos em que uma escola consegue agir.
+
+![Triagem de risco acadêmico](assets/img/app.png)
 
 ---
 
 ## Como rodar
 
-O Python do sistema costuma recusar instalação de pacote (PEP 668), então o venv não é preferência, é requisito.
+O Python do sistema costuma recusar instalação de pacote (PEP 668), então o ambiente virtual não é preferência, é requisito.
 
 ### O app
 
@@ -26,13 +32,11 @@ streamlit run app.py
 ### Os notebooks
 
 ```bash
-pip install -r requirements-dev.txt
+pip install -r requirements-notebooks.txt
 jupyter lab
 ```
 
-O `requirements.txt` é enxuto de propósito, com só o que o app precisa, porque é ele que o Streamlit Cloud instala no deploy. O Jupyter vive no `requirements-dev.txt`.
-
-Os notebooks estão salvos **com as saídas**, então dá para ler tudo direto no GitHub sem rodar nada.
+Eles estão salvos **com as saídas**, então dá para ler tudo direto no GitHub sem rodar nada.
 
 ### A verificação
 
@@ -40,13 +44,50 @@ Os notebooks estão salvos **com as saídas**, então dá para ler tudo direto n
 python tests/teste_notebooks.py
 ```
 
-São 114 verificações: integridade dos arquivos, igualdade da base preparada entre os notebooks, recálculo de 33 números afirmados no texto, presença desses números no markdown, e o app. Com `--executar` inclui rodar os seis notebooks do zero, somando 120.
+---
+
+## Estrutura de pastas
+
+```
+app.py                       o app Streamlit, autocontido
+README.md
+
+data/
+  raw/                       o CSV original, nunca alterado
+
+notebooks/                   um por tarefa do desafio, executados
+  01_exploracao_inicial.ipynb
+  02_engenharia_de_dados.ipynb
+  03_analise_estatistica.ipynb
+  04_aplicacao_pratica.ipynb
+  05_visualizacao.ipynb
+  06_sintese_de_insights.ipynb
+
+tests/
+  teste_notebooks.py         a verificação do projeto inteiro
+
+assets/
+  fonts/                     Red Hat Text, para os gráficos usarem a
+                             mesma fonte da interface
+  img/                       capturas do app, usadas no README e nos
+                             notebooks 04 a 06
+
+.streamlit/
+  config.toml                tema do app, versionado para sobreviver ao deploy
+
+requirements.txt             o que o app precisa
+requirements-notebooks.txt   o mesmo, mais o Jupyter
+```
+
+**Por que dois arquivos de dependência.** O Streamlit Cloud instala o `requirements.txt` a cada deploy. Se o Jupyter estivesse ali, seriam oitenta pacotes a mais para baixar e resolver em toda publicação, sem nenhum deles ser usado pelo app. O `requirements-notebooks.txt` faz `-r requirements.txt` e acrescenta só o que falta para abrir os notebooks.
+
+**`data/raw/` não tem um `data/processed/` ao lado.** Nenhuma base tratada é gravada em disco. Os notebooks 02 a 06 e o app compartilham a mesma função `preparar_dados()`, e o teste confere que os cinco chegam a um DataFrame idêntico. Um arquivo intermediário só criaria a chance de ele ficar desatualizado em relação ao código que o gerou.
 
 ---
 
-## Como foi estruturado
+## Os notebooks
 
-Um notebook por tarefa do desafio, cada um fechando com o gancho para o seguinte.
+Um por tarefa do desafio, cada um fechando com o gancho para o seguinte.
 
 | Notebook | O que responde | Achado que mudou a análise |
 |---|---|---|
@@ -57,18 +98,6 @@ Um notebook por tarefa do desafio, cada um fechando com o gancho para o seguinte
 | [05 Visualização](notebooks/05_visualizacao.ipynb) | Como comunicar? | Abaixo de 2h de estudo, **94% reprovam**; de 5h em diante, ninguém |
 | [06 Síntese de insights](notebooks/06_sintese_de_insights.ipynb) | Há diferença entre grupos? | **Nenhuma**, exceto saúde mental |
 
-```
-app.py                  app Streamlit, autocontido
-notebooks/              os seis notebooks, executados
-data/raw/               o CSV original, intocado
-tests/                  a verificação
-assets/fonts/           Red Hat Text, para os gráficos usarem a fonte da interface
-docs/                   capturas do app
-.streamlit/config.toml  tema
-```
-
-Nenhuma base tratada é gravada em disco. Os notebooks 02 a 06 e o app compartilham a mesma função `preparar_dados()`, e o teste confere que os cinco chegam a um DataFrame idêntico.
-
 ---
 
 ## O app
@@ -77,9 +106,9 @@ Três abas, feitas para a coordenação pedagógica.
 
 **Aluno.** Escolhe alguém da base ou cadastra um novo e recebe a nota prevista, o veredito e o simulador de intervenção, que ordena as mudanças de hábito por quantos pontos cada uma renderia.
 
-**Panorama da turma** ([captura](docs/app-panorama.png)). Seletor de hábito com dois painéis sobre o mesmo eixo de faixas: em cima a nota de cada faixa, embaixo quantos ficam abaixo do corte. Mais o mapa de calor de correlação.
+**Panorama da turma** ([captura](assets/img/app-panorama.png)). Seletor de hábito com dois painéis sobre o mesmo eixo de faixas: em cima a distribuição da nota em cada faixa, embaixo quantos ficam abaixo do corte. Mais o mapa de calor de correlação.
 
-**Insights** ([captura](docs/app-insights.png)). Impacto de cada hábito em pontos, um comparador que responde "há diferença entre grupos?" para qualquer recorte, e as recomendações.
+**Insights** ([captura](assets/img/app-insights.png)). Impacto de cada hábito em pontos, um comparador que responde "há diferença entre grupos?" para qualquer recorte, e as recomendações.
 
 ### O veredito tem três estados, e o terceiro é o que importa
 
@@ -111,7 +140,7 @@ Perto do corte o modelo fica **pior que não ter modelo nenhum**. São 20% da tu
 
 Sem efeito detectável: escolaridade dos pais, qualidade da internet, trabalho de meio período, qualidade da dieta, idade e atividade extracurricular. Em todas, o intervalo de 95% da correlação contém o zero.
 
-**A coluna do meio é a que muda a conversa.** Horas de estudo sozinha ocupa 68% da variação da nota, o que faz todo o resto parecer irrelevante quando medido contra o total. Entre alunos que estudam a mesma quantidade, saúde mental explica 0,575 do que sobra.
+**A coluna do meio é a que muda a conversa.** Ela mede cada hábito entre alunos que estudam a mesma quantidade, e aí saúde mental sobe de 0,32 para 0,575.
 
 ### Recomendações práticas
 
@@ -153,13 +182,13 @@ Saúde mental é o único agrupamento com gradiente limpo e amplitude relevante,
 
 ---
 
-## Publicar o app
+## A verificação
 
-O app foi feito para o [Streamlit Community Cloud](https://share.streamlit.io), que é gratuito e lê direto deste repositório.
+`tests/teste_notebooks.py` faz 114 verificações, ou 120 com `--executar`:
 
-1. Entrar em `share.streamlit.io` com a conta do GitHub
-2. Apontar para este repositório, branch `main`, arquivo `app.py`
-3. Em configurações avançadas, escolher **Python 3.12 ou superior** (o `numpy` fixado exige 3.12)
-4. Publicar
-
-Três detalhes do repositório existem para que esse deploy funcione sem ajuste: o `requirements.txt` não carrega o Jupyter, o caminho do CSV é resolvido a partir do próprio `app.py` em vez do diretório de execução, e o tema está em `.streamlit/config.toml` em vez de CSS injetado.
+1. **Integridade.** Toda célula de código tem saída, contadores em sequência, nenhum erro gravado, e todo link e imagem resolvem.
+2. **Igualdade da base.** Extrai `preparar_dados()` de cada notebook por AST, executa e compara os DataFrames.
+3. **Recálculo.** Refaz 33 números do zero e compara com o que o texto afirma.
+4. **Presença no texto.** Confere que os notebooks citam esses valores. Se um número muda, a parte 3 acusa o valor novo e a parte 4 acusa o texto que ficou para trás.
+5. **O app.** Três abas, seis hábitos, seis recortes, com asserção de conteúdo e não só de ausência de erro.
+6. **Execução.** Com `--executar`, roda os seis notebooks do zero num kernel limpo.
