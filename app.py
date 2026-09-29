@@ -902,13 +902,22 @@ with aba_insights:
             unsafe_allow_html=True,
         )
 
-    st.markdown(
-        '<p class="linhafina">Nenhum recorte demográfico separa as notas: todas as '
-        "amplitudes ficam abaixo de 0,15 desvio, e as maiores nem são monótonas "
-        "(quem come <em>Fair</em> tira mais que quem come <em>Good</em>). A única "
-        "exceção está abaixo.</p>",
-        unsafe_allow_html=True,
-    )
+    esq, dir_ = st.columns(2, gap="large")
+    with esq:
+        st.markdown(
+            '<div class="legenda"><p><strong>Nenhum recorte demográfico separa as '
+            "notas.</strong> Todas as amplitudes ficam abaixo de 0,15 desvio, que é "
+            "menos de um terço da régua.</p></div>",
+            unsafe_allow_html=True,
+        )
+    with dir_:
+        st.markdown(
+            '<div class="legenda"><p>E as maiores nem são monótonas: quem come '
+            "<em>Fair</em> tira mais que quem come <em>Good</em>. Efeito real "
+            "apareceria como gradiente, não como zigue-zague. A única exceção está "
+            "abaixo.</p></div>",
+            unsafe_allow_html=True,
+        )
 
     st.divider()
     st.markdown('<div class="secao">A exceção: saúde mental</div>',
@@ -922,13 +931,22 @@ with aba_insights:
         ),
         width="stretch",
     )
-    st.markdown(
-        '<p class="linhafina">É o único agrupamento com gradiente limpo e amplitude '
-        "relevante: <strong>13,0 pontos</strong> entre a faixa mais baixa e a mais "
-        "alta, dez vezes a diferença de gênero. Na escala de 1 a 10 sem agrupar, a "
-        "distância entre as pontas chega a 15,6 pontos, ou 0,92 desvio.</p>",
-        unsafe_allow_html=True,
-    )
+    esq, dir_ = st.columns(2, gap="large")
+    with esq:
+        st.markdown(
+            '<div class="legenda"><p>É o único agrupamento com <strong>gradiente '
+            "limpo</strong>: cada faixa fica acima da anterior, sem inversão em "
+            "nenhum degrau. É assim que um efeito real se comporta.</p></div>",
+            unsafe_allow_html=True,
+        )
+    with dir_:
+        st.markdown(
+            '<div class="legenda"><p>São <strong>13,0 pontos</strong> entre a faixa '
+            "mais baixa e a mais alta, dez vezes a diferença de gênero. Na escala de "
+            "1 a 10 sem agrupar, a distância entre as pontas chega a 15,6 pontos, ou "
+            "0,92 desvio.</p></div>",
+            unsafe_allow_html=True,
+        )
 
     st.divider()
     st.markdown('<div class="secao">O que fazer com isso</div>',
