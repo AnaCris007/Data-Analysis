@@ -1,10 +1,10 @@
 # Hábitos e desempenho estudantil
 
-Uma [base](data/raw/habitos_e_desempenho_estudantil.csv) de 1.000 alunos relaciona hábitos de estudo, sono, tela, exercício e saúde mental com a nota de prova. Este repositório descreve essa base, mede o que de fato explica a nota, e termina numa ferramenta que a coordenação pedagógica pode usar: dado um aluno, ela diz se ele está em rota de reprovação e qual mudança de hábito renderia mais pontos.
+Uma [base](data/raw/habitos_e_desempenho_estudantil.csv) de 1.000 alunos relaciona hábitos de estudo, sono, tempo de tela, exercício e saúde mental com a nota de prova. O projeto explora os dados, mede as principais associações, constrói um modelo preditivo e disponibiliza uma ferramenta para apoio à coordenação pedagógica.
 
 <div align="center">
 
-**[Abrir o site](https://data-analysis-007.streamlit.app/)** · Triagem de risco acadêmico
+**[Abrir o site](https://data-analysis-007.streamlit.app/) · Triagem de risco acadêmico**
 
 </div>
 
@@ -12,11 +12,21 @@ Uma [base](data/raw/habitos_e_desempenho_estudantil.csv) de 1.000 alunos relacio
 
 ---
 
+## Sumário
+
+* [Como rodar](#como-rodar)
+* [Estrutura de pastas](#estrutura-de-pastas)
+* [Os notebooks](#os-notebooks)
+* [O app](#o-app)
+* [Principais conclusões](#principais-conclusões)
+* [Limitações](#limitações)
+* [A verificação](#a-verificação)
+
+---
+
 ## Como rodar
 
-Para isolar as dependências e garantir que o projeto rode em qualquer ambiente, utilize um ambiente virtual (`venv`).
-
-### O app
+### App
 
 ```bash
 python3 -m venv .venv
@@ -25,168 +35,170 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-### Os notebooks
+### Notebooks
 
 ```bash
 pip install -r requirements-notebooks.txt
 jupyter lab
 ```
 
-**Nota*:* Eles estão salvos **com as saídas**, então dá para ler tudo direto no GitHub sem rodar nada.
+Os notebooks estão salvos **com as saídas**, então podem ser consultados diretamente pelo GitHub.
 
-### A verificação
-
-Para validar a execução dos notebooks foram desenvolvidos alguns testes simples que podem ser executados via linha de comando:
+### Testes
 
 ```bash
 python tests/teste_notebooks.py
+```
+
+Para executar também os notebooks do zero:
+
+```bash
+python tests/teste_notebooks.py --executar
 ```
 
 ---
 
 ## Estrutura de pastas
 
-```
-app.py                       o app Streamlit, autocontido
-README.md
+```text
+app.py                       # aplicação Streamlit
+README.md                    # documentação do projeto
 
 data/
-  raw/                       o CSV original, nunca alterado
+  raw/
+    habitos_e_desempenho_estudantil.csv  # base original, nunca alterada
 
-notebooks/                   um por tarefa do desafio, executados
-  01_exploracao_inicial.ipynb
-  02_engenharia_de_dados.ipynb
-  03_analise_estatistica.ipynb
-  04_aplicacao_pratica.ipynb
-  05_visualizacao.ipynb
-  06_sintese_de_insights.ipynb
+notebooks/                   # análises do projeto
+  01_exploracao_inicial.ipynb           # exploração e qualidade dos dados
+  02_engenharia_de_dados.ipynb          # preparação e transformação dos dados
+  03_analise_estatistica.ipynb          # correlações e diferenças entre grupos
+  04_aplicacao_pratica.ipynb            # construção e avaliação do modelo
+  05_visualizacao.ipynb                 # visualizações dos resultados
+  06_sintese_de_insights.ipynb          # conclusões e recomendações
 
 tests/
-  teste_notebooks.py         a verificação do projeto inteiro
+  teste_notebooks.py         # testes de consistência do projeto
 
 assets/
-  fonts/                     Red Hat Text, para os gráficos usarem a
-                             mesma fonte da interface
-  img/                       capturas do app, usadas no README e nos
-                             notebooks 04 a 06
+  fonts/                     # fontes utilizadas nos gráficos
+  img/                       # imagens do app e dos notebooks
 
 .streamlit/
-  config.toml                tema do app, versionado para sobreviver ao deploy
+  config.toml                # configuração visual do Streamlit
 
-requirements.txt             o que o app precisa
-requirements-notebooks.txt   o mesmo, mais o Jupyter
+requirements.txt             # dependências necessárias para o app
+requirements-notebooks.txt   # dependências do app + Jupyter
 ```
 
-**Por que dois arquivos de dependência.** O Streamlit Cloud instala o `requirements.txt` a cada deploy. Se o Jupyter estivesse ali, seriam oitenta pacotes a mais para baixar e resolver em toda publicação, sem nenhum deles ser usado pelo app. O `requirements-notebooks.txt` faz `-r requirements.txt` e acrescenta só o que falta para abrir os notebooks.
-
-**`data/raw/` não tem um `data/processed/` ao lado.** Nenhuma base tratada é gravada em disco. Os notebooks 02 a 06 e o app compartilham a mesma função `preparar_dados()`, e o teste confere que os cinco chegam a um DataFrame idêntico. Um arquivo intermediário só criaria a chance de ele ficar desatualizado em relação ao código que o gerou.
+O projeto não possui `data/processed/`: os notebooks e o app compartilham a mesma função `preparar_dados()`, evitando manter uma base tratada que poderia ficar desatualizada.
 
 ---
 
 ## Os notebooks
 
-Um por tarefa do desafio, cada um fechando com o gancho para o seguinte.
-
-| Notebook | Objetivo |
-|---|---|
-| [01 Exploração inicial](notebooks/01_exploracao_inicial.ipynb) | A base é confiável? |
-| [02 Engenharia de dados](notebooks/02_engenharia_de_dados.ipynb) | Que variáveis criar? |
-| [03 Análise estatística](notebooks/03_analise_estatistica.ipynb) | O que explica a nota? |
-| [04 Aplicação prática](notebooks/04_aplicacao_pratica.ipynb) | O que dá para fazer? |
-| [05 Visualização](notebooks/05_visualizacao.ipynb) | Como comunicar? |
-| [06 Síntese de insights](notebooks/06_sintese_de_insights.ipynb) | Há diferença entre grupos? |
+| Notebook                                                           | Etapa                                 |
+| ------------------------------------------------------------------ | ------------------------------------- |
+| [01 — Exploração inicial](notebooks/01_exploracao_inicial.ipynb)   | Exploração e qualidade dos dados      |
+| [02 — Engenharia de dados](notebooks/02_engenharia_de_dados.ipynb) | Preparação das variáveis              |
+| [03 — Análise estatística](notebooks/03_analise_estatistica.ipynb) | Correlações e diferenças entre grupos |
+| [04 — Aplicação prática](notebooks/04_aplicacao_pratica.ipynb)     | Modelo preditivo                      |
+| [05 — Visualização](notebooks/05_visualizacao.ipynb)               | Visualizações                         |
+| [06 — Síntese de insights](notebooks/06_sintese_de_insights.ipynb) | Conclusões e recomendações            |
 
 ---
 
 ## O app
 
-Três abas, feitas para a coordenação pedagógica.
+O aplicativo possui três áreas principais:
 
-**Aluno.** Escolhe alguém da base ou cadastra um novo e recebe a nota prevista, o veredito e o simulador de intervenção, que ordena as mudanças de hábito por quantos pontos cada uma renderia.
+**Aluno:** seleciona ou cadastra um aluno e visualiza a nota prevista, o risco acadêmico e um simulador de intervenção.
 
-**Panorama da turma** ([captura](assets/img/app-panorama.png)). Seletor de hábito com dois painéis sobre o mesmo eixo de faixas: em cima a distribuição da nota em cada faixa, embaixo quantos ficam abaixo do corte. Mais o mapa de calor de correlação.
+**Panorama da turma:** explora a distribuição das notas por hábito e o mapa de correlações.
 
-**Insights** ([captura](assets/img/app-insights.png)). Impacto de cada hábito em pontos, um comparador que responde "há diferença entre grupos?" para qualquer recorte, e as recomendações.
+![Panorama da turma](assets/img/app-panorama.png)
 
-### O veredito tem três estados, e o terceiro é o que importa
+**Insights:** apresenta os principais resultados estatísticos, comparações entre grupos e recomendações.
 
-O modelo acerta 92,1% dos vereditos, contra 72,0% de simplesmente chutar que todo mundo passa. Mas essa é uma média, e ela esconde onde o modelo erra:
+![Insights](assets/img/app-insights.png)
 
-| Distância da linha de corte | Alunos | Acerto |
-|---|---|---|
-| **até 5,1 pontos** | 203 | **67,5%** |
-| 5,1 a 10,1 | 196 | 93,9% |
-| 10,1 a 15,2 | 199 | 99,5% |
-| mais de 15,2 | 402 | 100% |
+### Zona de incerteza
 
-Perto do corte o modelo fica **pior que não ter modelo nenhum**. São 20% da turma. Esses casos aparecem como **zona de incerteza** em vez de receberem um veredito falsamente confiante, e é justamente neles que vale gastar atenção humana.
+O modelo acerta **92,1%** dos vereditos, contra **72,0%** de uma estratégia que classifica todos como aprovados.
 
----
+Porém, perto do corte de 60 pontos, o desempenho cai:
 
-## As conclusões
+| Distância do corte | Alunos |    Acerto |
+| ------------------ | -----: | --------: |
+| **até 5,1 pontos** |    203 | **67,5%** |
+| 5,1 a 10,1         |    196 |     93,9% |
+| 10,1 a 15,2        |    199 |     99,5% |
+| mais de 15,2       |    402 |      100% |
 
-### Quais hábitos mais afetam as notas
-
-| Posição | Hábito | r simples | r parcial | Pontos por desvio |
-|---|---|---|---|---|
-| 1 | Horas de estudo | +0,825 | referência | **+14,1** |
-| 2 | Saúde mental | +0,322 | **+0,575** | +5,6 |
-| 3 | Tempo de tela | -0,238 | **-0,412** | -3,9 |
-| 4 | Exercício | +0,160 | +0,326 | +2,9 |
-| 5 | Sono | +0,122 | +0,256 | +2,5 |
-| 6 | Frequência às aulas | +0,090 | +0,121 | +1,4 |
-
-Sem efeito detectável: escolaridade dos pais, qualidade da internet, trabalho de meio período, qualidade da dieta, idade e atividade extracurricular. Em todas, o intervalo de 95% da correlação contém o zero.
-
-**A coluna do meio é a que muda a conversa.** Ela mede cada hábito entre alunos que estudam a mesma quantidade, e aí saúde mental sobe de 0,32 para 0,575.
-
-### Recomendações práticas
-
-1. **Priorizar quem estuda menos de 3h por dia.** São 334 alunos, um terço da turma. Abaixo de 2h, 94% ficam abaixo de 60; entre 2h e 3h são 51%. Tirar um aluno de 2h para 3h derruba o risco de **51% para 16%**.
-2. **Tratar saúde mental como variável acadêmica.** Segundo maior efeito, maior entre os que uma escola consegue influenciar, e único recorte de grupo com diferença real.
-3. **Negociar tempo de tela.** Cada hora a menos vale 2,5 pontos, e a mediana da turma está em 4,4 horas por dia.
-
-O maior número não é a melhor recomendação. Horas de estudo lidera todas as métricas e é a mais difícil de mudar por conversa: "estude mais uma hora por dia" é o conselho que todo aluno em dificuldade já ouviu. Saúde mental e tela aparecem acima apesar de efeitos menores porque têm caminho de ação.
-
-### Há diferença entre grupos?
-
-**Não, com uma exceção.**
-
-| Recorte | Amplitude | Em desvios |
-|---|---|---|
-| Qualidade da alimentação | 2,30 pts | 0,14 |
-| Escolaridade dos pais | 2,19 pts | 0,13 |
-| Qualidade da internet | 2,00 pts | 0,12 |
-| Gênero | 1,28 pts | 0,08 |
-| Trabalha meio período | 1,09 pts | 0,06 |
-| Atividade extracurricular | 0,03 pts | 0,00 |
-| **Saúde mental** | **15,6 pts** | **0,92** |
-
-As maiores diferenças demográficas nem sequer são monótonas: quem come *Fair* tira mais que quem come *Good*, e internet *Average* supera *Good*. Efeito real apareceria como gradiente, não como zigue-zague.
-
-Saúde mental é o único agrupamento com gradiente limpo e amplitude relevante, doze vezes a diferença de gênero.
+Por isso, os 203 alunos mais próximos do corte são tratados como **zona de incerteza**, priorizando a avaliação humana.
 
 ---
 
-## O que esta base não permite concluir
+# Principais conclusões
 
-**Nada aqui estabelece causa.** Todas as medidas são de associação. O simulador responde "o que o modelo prevê se esse número mudar", não "o que acontece se o aluno mudar de hábito".
+## Hábitos e desempenho
 
-**Os hábitos desta base são independentes entre si**, com correlação máxima de 0,072 entre 89 pares. Em estudantes reais eles vêm em pacote: quem dorme mal costuma estudar menos e usar mais tela à noite.
+| Hábito              |  r simples |  r parcial | Pontos por desvio |
+| ------------------- | ---------: | ---------: | ----------------: |
+| **Horas de estudo** | **+0,825** | referência |         **+14,1** |
+| Saúde mental        |     +0,322 | **+0,575** |              +5,6 |
+| Tempo de tela       |     -0,238 | **-0,412** |              -3,9 |
+| Exercício           |     +0,160 |     +0,326 |              +2,9 |
+| Sono                |     +0,122 |     +0,256 |              +2,5 |
+| Frequência às aulas |     +0,090 |     +0,121 |              +1,4 |
 
-**A base é sintética.** Distribuições suaves, três variáveis quase uniformes, zero duplicata, zero valor fora de domínio, zero rótulo inconsistente. As conclusões valem como exercício analítico, e não como achado sobre estudantes reais.
+As horas de estudo apresentam a maior associação com a nota. Ao controlar por horas de estudo, saúde mental mantém uma associação relevante, passando de **0,322 para 0,575**.
 
-**A nota está censurada no topo.** 48 alunos com exatamente 100, o que atenua todas as correlações relatadas. Os números aqui são piso, não valor exato, e o notebook 03 mostra que descartar esses alunos piora a estimativa em vez de corrigi-la.
+Não houve efeito detectável, nesta análise, para escolaridade dos pais, qualidade da internet, trabalho de meio período, qualidade da dieta, idade e atividade extracurricular.
+
+## Recomendações
+
+1. **Priorizar alunos que estudam menos de 3h/dia.** São 334 alunos. Entre quem estuda de 2h a 3h, 51% ficam abaixo de 60 pontos; entre quem estuda 3h ou mais, são 16%.
+
+2. **Acompanhar saúde mental.** É a segunda maior associação parcial e o único recorte de grupos com diferença de médias relevante. Apesar de horas de estudo apresentarem uma associação maior, saúde mental se destaca por ser um aspecto sobre o qual a escola pode atuar diretamente, além de ser uma frente de intervenção mais viável do que simplesmente pedir ao aluno que estude mais.
+
+3. **Observar tempo de tela.** A correlação parcial é **-0,412** e a mediana da turma é de **4,4 horas por dia**.
+
+> Esses resultados representam associações observadas na base e não comprovam que mudar um hábito causará determinada mudança na nota.
+
+
+## Há diferença entre grupos?
+
+| Recorte                   |    Amplitude | Em desvios |
+| ------------------------- | -----------: | ---------: |
+| Qualidade da alimentação  |     2,30 pts |       0,14 |
+| Escolaridade dos pais     |     2,19 pts |       0,13 |
+| Qualidade da internet     |     2,00 pts |       0,12 |
+| Gênero                    |     1,28 pts |       0,08 |
+| Trabalha meio período     |     1,09 pts |       0,06 |
+| Atividade extracurricular |     0,03 pts |       0,00 |
+| **Saúde mental**          | **15,6 pts** |   **0,92** |
+
+A amplitude é a diferença entre a maior e a menor média dos grupos. Saúde mental apresenta a maior diferença, de **15,6 pontos**, equivalente a **0,92 desvio-padrão**.
+
+---
+
+## Limitações
+
+**Correlação não é causalidade.** O modelo mostra como a previsão muda quando os valores são alterados, mas isso não significa que a mudança realmente causaria esse efeito no aluno.
+
+**Os resultados dependem desta base.** Os padrões encontrados não devem ser generalizados automaticamente para outras populações.
 
 ---
 
 ## A verificação
 
-`tests/teste_notebooks.py` faz 114 verificações, ou 120 com `--executar`:
+`tests/teste_notebooks.py` realiza **114 verificações** na execução padrão e **120** com `--executar`.
 
-1. **Integridade.** Toda célula de código tem saída, contadores em sequência, nenhum erro gravado, e todo link e imagem resolvem.
-2. **Igualdade da base.** Extrai `preparar_dados()` de cada notebook por AST, executa e compara os DataFrames.
-3. **Recálculo.** Refaz 33 números do zero e compara com o que o texto afirma.
-4. **Presença no texto.** Confere que os notebooks citam esses valores. Se um número muda, a parte 3 acusa o valor novo e a parte 4 acusa o texto que ficou para trás.
-5. **O app.** Três abas, seis hábitos, seis recortes, com asserção de conteúdo e não só de ausência de erro.
-6. **Execução.** Com `--executar`, roda os seis notebooks do zero num kernel limpo.
+Ele verifica:
+
+1. **Integridade:** notebooks, células, links e imagens.
+2. **Consistência da base:** os notebooks chegam ao mesmo DataFrame preparado.
+3. **Recálculo:** refaz os principais resultados numéricos.
+4. **Texto:** verifica se os valores calculados aparecem nos notebooks.
+5. **App:** testa as principais telas, seletores e interações.
+6. **Execução:** com `--executar`, roda os seis notebooks do zero.
