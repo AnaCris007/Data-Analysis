@@ -87,14 +87,14 @@ requirements-notebooks.txt   o mesmo, mais o Jupyter
 
 Um por tarefa do desafio, cada um fechando com o gancho para o seguinte.
 
-| Notebook | O que responde | Achado que mudou a análise |
-|---|---|---|
-| [01 Exploração inicial](notebooks/01_exploracao_inicial.ipynb) | A base é confiável? | O `read_csv` padrão **fabrica 91 ausentes** que o arquivo não tem |
-| [02 Engenharia de dados](notebooks/02_engenharia_de_dados.ipynb) | Que variáveis criar? | Seis de sete derivadas **pioram** o sinal |
-| [03 Análise estatística](notebooks/03_analise_estatistica.ipynb) | O que explica a nota? | A correlação simples **subestima** todo hábito que não seja estudo |
-| [04 Aplicação prática](notebooks/04_aplicacao_pratica.ipynb) | O que dá para fazer? | Perto da linha de corte o modelo acerta 67,5%, **pior que chutar** |
-| [05 Visualização](notebooks/05_visualizacao.ipynb) | Como comunicar? | Abaixo de 2h de estudo, **94% reprovam**; de 5h em diante, ninguém |
-| [06 Síntese de insights](notebooks/06_sintese_de_insights.ipynb) | Há diferença entre grupos? | **Nenhuma**, exceto saúde mental |
+| Notebook | Objetivo |
+|---|---|
+| [01 Exploração inicial](notebooks/01_exploracao_inicial.ipynb) | A base é confiável? |
+| [02 Engenharia de dados](notebooks/02_engenharia_de_dados.ipynb) | Que variáveis criar? |
+| [03 Análise estatística](notebooks/03_analise_estatistica.ipynb) | O que explica a nota? |
+| [04 Aplicação prática](notebooks/04_aplicacao_pratica.ipynb) | O que dá para fazer? |
+| [05 Visualização](notebooks/05_visualizacao.ipynb) | Como comunicar? |
+| [06 Síntese de insights](notebooks/06_sintese_de_insights.ipynb) | Há diferença entre grupos? |
 
 ---
 
