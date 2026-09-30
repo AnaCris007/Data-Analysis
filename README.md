@@ -192,7 +192,7 @@ A amplitude é a diferença entre a maior e a menor média dos grupos. Saúde me
 
 ## A verificação
 
-`tests/teste_notebooks.py` realiza **114 verificações** na execução padrão e **120** com `--executar`.
+`tests/teste_notebooks.py` realiza **113 verificações** na execução padrão e **119** com `--executar`.
 
 Ele verifica:
 

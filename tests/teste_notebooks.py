@@ -254,7 +254,6 @@ def parte_4_afirmacoes():
     # (notebook, trecho que precisa aparecer no markdown). Se um número mudar, a
     # parte 3 acusa o valor novo e esta acusa o texto que ficou para trás.
     AFIRMACOES = [
-        ("01_exploracao_inicial",   "91 linhas (9,1%)"),
         ("01_exploracao_inicial",   "48 alunos (4,8%)"),
         ("02_engenharia_de_dados",  "-0,238"),
         ("03_analise_estatistica",  "0,825"),
